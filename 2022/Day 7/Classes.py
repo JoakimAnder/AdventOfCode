@@ -1,14 +1,15 @@
 
+from dataclasses import dataclass
 from typing import List
 
-
+@dataclass
 class File:
-    def __init__(self, name: str, size:int) -> None:
-        self.name = name
-        self.size = size
+    name: str
+    size: int
 
 class Directory:
-    name = 'dir'
+    prefix = 'dir'
+
     def __init__(self, name: str) -> None:
         self.name = name
         self.parent:Directory = None
@@ -50,12 +51,10 @@ class Directory:
 class Command:
     prefix = '$'
 
+@dataclass
 class ChangeDirectoryCommand(Command):
+    value: str
     commandName = 'cd'
-
-    def __init__(self, value: str) -> None:
-        super().__init__()
-        self.value = value
 
     def execute(self, directory: Directory) -> Directory:
         return directory.getDirectory(self.value)

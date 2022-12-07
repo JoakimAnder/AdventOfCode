@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List
 
 class BingoBoard:
@@ -28,10 +29,10 @@ class BingoBoard:
                 unmarkedNumbers.append(self._numbers[i])
         return winningNumber * sum(unmarkedNumbers)
 
+@dataclass
 class BingoResult:
-    def __init__(self, winningNumber: int, winningBoards: List[BingoBoard]) -> None:
-        self.winningNumber = winningNumber
-        self.winningBoards = winningBoards
+    winningNumber: int
+    winningBoards: List[BingoBoard]
 
 class BingoGame:
     def __init__(self, numbers: List[int], boards: List[BingoBoard]) -> None:

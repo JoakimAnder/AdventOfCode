@@ -15,7 +15,7 @@ def parseCommand(input: str) -> Command:
     return None
 
 def parseDirectory(input: str) -> Directory:
-    input = input[len(Directory.name):].strip()
+    input = input[len(Directory.prefix):].strip()
     return Directory(input)
 
 def parseFile(input: str) -> File:
@@ -26,7 +26,7 @@ def parseFile(input: str) -> File:
 def parseInput(input: str):
     if input.startswith(Command.prefix):
         return parseCommand(input)
-    if input.startswith(Directory.name):
+    if input.startswith(Directory.prefix):
         return parseDirectory(input)
     return parseFile(input)
 
