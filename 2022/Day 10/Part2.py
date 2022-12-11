@@ -1,6 +1,4 @@
-from typing import Dict, List
 from Classes import Addx, Noop, Instruction, Sprite
-import logging
 
 INPUT_BASE_DIR = __file__[:__file__.rindex('/')+1] if '/' in __file__ else __file__[:__file__.rindex('\\')+1]
 
