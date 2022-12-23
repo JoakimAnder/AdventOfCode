@@ -1,7 +1,20 @@
+from enum import Enum
 from typing import Dict, List, Tuple
-from Classes import Point, Matrix, Sensor, Line
+from Classes import Point, Map, Sensor, Line
+import logging
+import time
+logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(levelname)s: %(message)s')
+logger = logging.getLogger(__file__)
+
+start_time = time.perf_counter()
 
 INPUT_BASE_DIR = __file__[:__file__.rindex('/')+1] if '/' in __file__ else __file__[:__file__.rindex('\\')+1]
+class Input(Enum):
+    Small = 'InputSmall.txt'
+    Medium = 'InputMedium.txt'
+    Full = 'Input.txt'
+
+INPUT = Input.Full
 
 def parse_point_from_input(input: str) -> Point:
     split_input = input.split(' ')
@@ -15,49 +28,38 @@ def parse_input(input: str) -> Sensor:
     beacon_point = parse_point_from_input(beacon_input)
     return Sensor(sensor_point, beacon_point)
     
-sensors: List[Sensor] = []
-with open(INPUT_BASE_DIR+'Input.txt') as input:
+map_ = Map()
+with open(INPUT_BASE_DIR+INPUT.value) as input:
     while True:
         line = input.readline()
         if not line: break
         line = line.strip()
 
-        sensors.append(parse_input(line))
-
-y_lines: Dict[int, List[Line]] = {}
+        map_.add_sensor(parse_input(line))
 
 min_ = Point(0, 0)
-max_ = Point(4_000_000, 4_000_000)
-max_ = Point(20, 20)
-for sensor in sensors:
-    for line in sensor.to_lines(min_, max_):
-        y = line.start.y
-        if y not in y_lines:
-            y_lines[y] = [line]
-            continue
-        
-        lines = sorted(y_lines[y] + [line], key=lambda line: line.start.x)
-        has_changed = True
-        while has_changed:
-            before_len = len(lines)
-            for i, (line, next_line) in enumerate(zip(lines, lines[1:])):
-                is_next_to_eachother = line.end.x + 1 == next_line.start.x
-                if not (line.is_intersecting(next_line) or is_next_to_eachother):
-                    continue
-                x1 = min(line.start.x, line.end.x, next_line.start.x, next_line.end.x)
-                x2 = max(line.start.x, line.end.x, next_line.start.x, next_line.end.x)
-                new_line = Line(Point(x1, y), Point(x2, y))
-                lines = lines[:i]+[new_line]+lines[i+2:]
-                break
-            else:
-                has_changed = False
-        y_lines[y] = lines
+max_ = Point(20, 20) if INPUT == Input.Small else Point(4_000_000, 4_000_000)
 
-lines_with_holes = {}
-for y, lines in y_lines.items():
-    if len(lines) > 1:
-        lines_with_holes[y] = lines
+all_filled_points = {point for sensor in map_.sensors for point in [sensor.location, sensor.beacon]}
+min_x = min(filter(lambda x: x >= min_.x, map(lambda point: point.x, all_filled_points)))
+max_x = max(filter(lambda x: x <= max_.x, map(lambda point: point.x, all_filled_points)))
 
-print(lines_with_holes)
-#{3249595: [Line(start=Point(x=0, y=3249595), end=Point(x=3340223, y=3249595)), Line(start=Point(x=3340225, y=3249595), end=Point(x=4000000, y=3249595))]}   
-print((3340224*4000000)+3249595)
+end_time = time.perf_counter()
+logger.debug(f'Parsing took {end_time-start_time} seconds')#Parsing took 0.001070500000000002 sec
+start_time = end_time
+
+rows_with_holes = filter(lambda r: len(r) > 1, map_.get_rows(min_, max_))
+
+end_time = time.perf_counter()
+logger.debug(f'Gathering rows took {end_time-start_time} seconds')#Gathering rows took 991.4144363 seconds
+start_time = end_time
+
+holes = [point for row in rows_with_holes for (line, next_line) in zip(row, row[1:]) for point in Line(line.end+Point(1), next_line.start-Point(1)).points()]
+
+end_time = time.perf_counter()
+logger.debug(f'Gathering {len(holes)} hole(s) took {end_time-start_time} seconds') #Gathering 1 hole(s) took 2.1836373999999523 seconds
+start_time = end_time
+
+for point in holes:
+    tuning_frequency = point.x*4_000_000 + point.y
+    print(f'tuning_frequency of {point}: {tuning_frequency}')

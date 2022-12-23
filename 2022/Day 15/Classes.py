@@ -1,20 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Callable, List, Dict, Tuple
-
-from functools import wraps
+import logging
 import time
-
-
-def timeit(func):
-    @wraps(func)
-    def timeit_wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
-        print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
-        return result
-    return timeit_wrapper
+logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(levelname)s: %(message)s')
+logger = logging.getLogger(__file__)
 
 
 @dataclass
@@ -54,32 +43,28 @@ class Point:
         y = self.y * other.y
         return Point(x, y)
 
-class Matrix:
-    def __init__(self, width: int, height: int, fill=None) -> None:
-        self._matrix: List[list] = []
-        for _ in range(height):
-            row = []
-            for _ in range(width):
-                row.append(fill)
-            self._matrix.append(row)
-
-    def get(self, point: Point):
-        return self._matrix[point.y][point.x]
-
-    def set(self, point: Point, value):
-        self._matrix[point.y][point.x] = value
-
-    def matrix(self) -> List[list]:
-        matrix = []
-        for row in self._matrix:
-            matrix.append(row[:])
-        return matrix
-
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
 
 @dataclass
 class Line:
     start: Point
     end: Point
+    _manhattan_distance = None
+
+    def manhattan_distance(self) -> int:
+        if self._manhattan_distance:
+            return self._manhattan_distance
+        difference = self.end - self.start
+        absolute_difference = difference.absolute()
+        self._manhattan_distance = absolute_difference.x + absolute_difference.y
+        return self._manhattan_distance
+    
+    def points_count(self):
+        return self.manhattan_distance() + 1
+
+    def slope(self):
+        return (self.start.y - self.end.y) / (self.start.x - self.end.x)
 
     def points(self) -> List[Point]:
         points = []
@@ -120,9 +105,6 @@ class Line:
             return True
         return False
 
-    def slope(self):
-        return (self.start.y - self.end.y) / (self.start.x - self.end.x)
-
     def is_containing(self, point:Point) -> bool:
         def check_the_simple_things(line: Line, point: Point) -> bool:
             if line.start == point or line.end == point:
@@ -161,50 +143,35 @@ class Line:
         
         return False
 
-    def manhattan_distance(self) -> int:
-        difference = self.end - self.start
-        absolute_difference = difference.absolute()
-        return absolute_difference.x + absolute_difference.y
-
 class Sensor:
     def __init__(self, location: Point, beacon: Point) -> None:
         self.location = location
         self.beacon = beacon
-        self._manhatan_distance = Line(location, beacon).manhattan_distance()
+        self._manhattan_distance = Line(location, beacon).manhattan_distance()
 
     def contains(self, point: Point) -> bool:
         point_distance = Line(self.location, point).manhattan_distance()
-        return self._manhatan_distance >= point_distance
+        return self._manhattan_distance >= point_distance
 
-    def get_row(self, y:int) -> Dict[int, str]:
-
+    def get_row(self, y:int, min_x = None, max_x = None) -> Line:
         y_distance = Line(self.location, Point(self.location.x, y)).manhattan_distance()
-        distance_difference = self._manhatan_distance - y_distance
+        distance_difference = self._manhattan_distance - y_distance
         if distance_difference < 0:
-            return dict()
+            return None
         
-        min_x = self.location.x - distance_difference
-        max_x = self.location.x + distance_difference
-
-        result = {x: '#' for x in range(min_x, max_x+1)}
-        if self.beacon.y == y:
-            result[self.beacon.x] = 'B'
-        if self.location.y == y:
-            result[self.location.x] = 'S'
+        min_ = self.location.x - distance_difference
+        if min_x is not None:
+            min_ = max(min_x, min_)
+        max_ = self.location.x + distance_difference
+        if max_x is not None:
+            max_ = min(max_x, max_)
+        result = Line(Point(min_, y), Point(max_, y))
         return result
-
-    @timeit
-    def to_lines(self, min_: Point = None, max_: Point = None) -> List[Line]:
-        result = []
-        start_y = self.location.y - self._manhatan_distance
-        end_y = self.location.y + self._manhatan_distance
-        if min_:
-            start_y = max(min_.y, start_y)
-        if max_:
-            end_y = min(max_.y, end_y)
-        for y in range(start_y, end_y + 1):
+        
+    def get_rows(self, min_: Point = None, max_: Point = None) -> List[Line]:
+        def get_y_row(y:int):
             y_distance = Line(self.location, Point(self.location.x, y)).manhattan_distance()
-            distance_difference = self._manhatan_distance - y_distance
+            distance_difference = self._manhattan_distance - y_distance
 
             min_x = self.location.x - distance_difference
             max_x = self.location.x + distance_difference
@@ -213,7 +180,59 @@ class Sensor:
             if max_:
                 max_x = min(max_.x, max_x)
 
-            result.append(Line(Point(min_x, y), Point(max_x, y)))
+            return Line(Point(min_x, y), Point(max_x, y))
+        start_time = time.perf_counter()
+        start_y = self.location.y - self._manhattan_distance
+        end_y = self.location.y + self._manhattan_distance
+        if min_:
+            start_y = max(min_.y, start_y)
+        if max_:
+            end_y = min(max_.y, end_y)
+
+        result = list(map(get_y_row, range(start_y, end_y + 1)))
+        end_time = time.perf_counter()
+        logger.debug(f'Got rows for Sensor with location {self.location} and distance {self._manhattan_distance} in {end_time-start_time} seconds')
         return result
 
+
+class Map:
+    def __init__(self) -> None:
+        self.sensors: List[Sensor] = []
+
+    def add_sensor(self, sensor: Sensor):
+        self.sensors.append(sensor)
+
+    def slice(self, y:int, min_x:int = None, max_x:int = None) -> List[Line]:
+        rows = list(filter(lambda row: row, [sensor.get_row(y, min_x=min_x, max_x=max_x) for sensor in self.sensors]))
+        combined = Map._combine_rows(rows)
+        return combined
+
+    def get_rows(self, min_: Point = None, max_: Point = None) -> List[List[Line]]:
+        dict_ = {}
+        for sensor in self.sensors:
+            for row in sensor.get_rows(min_, max_):
+                y = row.start.y
+                if y in dict_:
+                    dict_[y] = Map._combine_rows(y, dict_[y]+[row])
+                else: 
+                    dict_[y] = [row]
+        return dict_.values()
+    
+    @staticmethod
+    def _combine_rows(y:int, rows: List[Line]) -> List[Line]:
+        lines = sorted(rows, key=lambda line: line.start.x)
+        has_changed = True
+        while has_changed:
+            for i, (line, next_line) in enumerate(zip(lines, lines[1:])):
+                is_next_to_eachother = line.end.x + 1 == next_line.start.x
+                if not (is_next_to_eachother or line.is_intersecting(next_line)):
+                    continue
+                x1 = min(line.start.x, line.end.x, next_line.start.x, next_line.end.x)
+                x2 = max(line.start.x, line.end.x, next_line.start.x, next_line.end.x)
+                new_line = Line(Point(x1, y), Point(x2, y))
+                lines = lines[:i]+[new_line]+lines[i+2:]
+                break
+            else:
+                has_changed = False
+        return lines
 
