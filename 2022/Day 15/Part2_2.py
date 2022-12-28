@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Dict, List, Tuple
-from Classes import Point, Map, Sensor, Line
+from Classes_2 import Point, Map, Sensor, Line
 import logging
 import time
 logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(levelname)s: %(message)s')
@@ -29,37 +29,50 @@ def parse_input(input: str) -> Sensor:
     return Sensor(sensor_point, beacon_point)
     
 map_ = Map()
+i = 0
 with open(INPUT_BASE_DIR+INPUT.value) as input:
     while True:
         line = input.readline()
         if not line: break
         line = line.strip()
-
-        map_.add_sensor(parse_input(line))
+        sensor = parse_input(line)
+        sensor.id = chr(ord('a') + i)
+        map_.add_sensor(sensor)
+        i += 1
 
 min_ = Point(0, 0)
-max_ = Point(4_000_000, 4_000_000) if INPUT == Input.Full else Point(20, 20)
+max_ = Point(20, 20) if INPUT == Input.Small else Point(4_000_000, 4_000_000)
 
 all_filled_points = {point for sensor in map_.sensors for point in [sensor.location, sensor.beacon]}
 min_x = min(filter(lambda x: x >= min_.x, map(lambda point: point.x, all_filled_points)))
 max_x = max(filter(lambda x: x <= max_.x, map(lambda point: point.x, all_filled_points)))
 
 end_time = time.perf_counter()
-logger.debug(f'Parsing took {end_time-start_time} seconds')#Parsing took 0.001070500000000002 sec
+logger.debug(f'Parsing took {end_time-start_time} seconds') #
 start_time = end_time
 
-rows_with_holes = filter(lambda r: len(r) > 1, map_.get_rows(min_, max_))
+map_.join_sensors()
 
 end_time = time.perf_counter()
-logger.debug(f'Gathering rows took {end_time-start_time} seconds')#Gathering rows took 991.4144363 seconds
+logger.debug(f'Joining sensors took {end_time-start_time} seconds') #
 start_time = end_time
 
-holes = [point for row in rows_with_holes for (line, next_line) in zip(row, row[1:]) for point in Line(line.end+Point(1), next_line.start-Point(1)).points()]
+dark_spots = map_.find_dark_spot(min_, max_)
 
 end_time = time.perf_counter()
-logger.debug(f'Gathering {len(holes)} hole(s) took {end_time-start_time} seconds') #Gathering 1 hole(s) took 2.1836373999999523 seconds
+logger.debug(f'Gathering {len(dark_spots)} dark spot(s) took {end_time-start_time} seconds') #
 start_time = end_time
 
-for point in holes:
+for point in dark_spots:
     tuning_frequency = point.x*4_000_000 + point.y
     print(f'tuning_frequency of {point}: {tuning_frequency}')
+
+
+"""
+
+3249595: [
+    Line(start=Point(x=0, y=3249595), end=Point(x=3340223, y=3249595)), 
+    Line(start=Point(x=3340225, y=3249595), end=Point(x=4000000, y=3249595))]}  
+
+print((3340224*4000000)+3249595)
+"""
