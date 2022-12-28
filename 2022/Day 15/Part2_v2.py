@@ -1,6 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Tuple
-from Classes_2 import Point, Map, Sensor, Line
+from Classes_v2 import Point, Map, Sensor
 import logging
 import time
 logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(levelname)s: %(message)s')
@@ -14,7 +13,7 @@ class Input(Enum):
     Medium = 'InputMedium.txt'
     Full = 'Input.txt'
 
-INPUT = Input.Full
+INPUT = Input.Small
 
 def parse_point_from_input(input: str) -> Point:
     split_input = input.split(' ')
@@ -29,16 +28,13 @@ def parse_input(input: str) -> Sensor:
     return Sensor(sensor_point, beacon_point)
     
 map_ = Map()
-i = 0
 with open(INPUT_BASE_DIR+INPUT.value) as input:
     while True:
         line = input.readline()
         if not line: break
         line = line.strip()
         sensor = parse_input(line)
-        sensor.id = chr(ord('a') + i)
         map_.add_sensor(sensor)
-        i += 1
 
 min_ = Point(0, 0)
 max_ = Point(20, 20) if INPUT == Input.Small else Point(4_000_000, 4_000_000)
@@ -66,13 +62,3 @@ start_time = end_time
 for point in dark_spots:
     tuning_frequency = point.x*4_000_000 + point.y
     print(f'tuning_frequency of {point}: {tuning_frequency}')
-
-
-"""
-
-3249595: [
-    Line(start=Point(x=0, y=3249595), end=Point(x=3340223, y=3249595)), 
-    Line(start=Point(x=3340225, y=3249595), end=Point(x=4000000, y=3249595))]}  
-
-print((3340224*4000000)+3249595)
-"""

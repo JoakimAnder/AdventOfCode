@@ -1,7 +1,6 @@
-from dataclasses import dataclass, field
-from typing import Callable, List, Dict, Set, Tuple
+from dataclasses import dataclass
+from typing import List
 import logging
-import time
 logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger(__file__)
 
@@ -20,10 +19,6 @@ class Point:
         x = abs(self.x)
         y = abs(self.y)
         return Point(x, y)
-
-    def cross_product(self, other) -> int:
-        other:Point = other
-        return self.x*other.y - self.y*other.x
         
     def __add__(self, other):
         if isinstance(other, int):
@@ -58,9 +53,6 @@ class Line:
         difference = self.end - self.start
         absolute_difference = difference.absolute()
         return absolute_difference.x + absolute_difference.y
-    
-    def points_count(self):
-        return self.manhattan_distance() + 1
 
     def slope(self):
         if self.end.x - self.start.x == 0:
@@ -96,87 +88,9 @@ class Line:
 
         return None
 
-    def points(self) -> List[Point]:
-        points = []
-        current_point = self.start
-        while current_point != self.end:
-            points.append(current_point)
-            normalized_difference = (self.end-current_point).normalize()
-            current_point += normalized_difference
-        points.append(self.end)
-        return points
-
-
-
 class Form:
     def __init__(self, edges: List[Point]) -> None:
         self.edges = list(edges)
-"""
-    def does_contain_whole(self, other):
-        other:Form = other
-
-        min_x = min(map(lambda p: p.x, self.edges))
-        max_x = max(map(lambda p: p.x, self.edges))
-        min_y = min(map(lambda p: p.y, self.edges))
-        max_y = max(map(lambda p: p.y, self.edges))
-
-        for y in range(min_y, max_y+1):
-            self_points = self.get_row(y)
-            other_points = other.get_row(y)
-            if any(p not in self_points for p in other_points):
-                return False
-        return True
-"""
-
-        
-
-"""
-class Rectangle:
-    def __init__(self, lr_diagonal: Line = None, rl_diagonal: Line = None) -> None:
-        if rl_diagonal and lr_diagonal:
-            raise ValueError('Can\'t provide both lr and rl diagonal')
-        if not (rl_diagonal or lr_diagonal):
-            raise ValueError('Can\'t provide no diagonal')
-        
-        diagonal = lr_diagonal if lr_diagonal else rl_diagonal
-
-        min_x = min([diagonal.start.x, diagonal.end.x])
-        max_x = max([diagonal.start.x, diagonal.end.x])
-        min_y = min([diagonal.start.y, diagonal.end.y])
-        max_y = max([diagonal.start.y, diagonal.end.y])
-        half_len_x = (max_x-min_x)/2
-        half_len_y = (max_y-min_y)/2
-        center_x = min_x + half_len_x
-        center_y = min_y + half_len_y
-        self.center_point = Point(center_x, center_y)
-
-        self.top_point = Point(center_x, min_y)
-        self.bottom_point = Point(center_x, max_y)
-        self.left_point = Point(min_x, center_y)
-        self.right_point = Point(min_x, center_y)
-
-        if rl_diagonal and diagonal.slope() == -1:
-            self.top_point = diagonal.start+0
-            self.right_point = diagonal.start+0
-            self.bottom_point = diagonal.end+0
-            self.left_point = diagonal.end+0
-        elif lr_diagonal and diagonal.slope() == 1:
-            self.top_point = diagonal.start+0
-            self.left_point = diagonal.start+0
-            self.bottom_point = diagonal.end+0
-            self.right_point = diagonal.end+0
-    
-    def does_contain_whole(self, other):
-        other:Rectangle = other
-        result = (
-            self.top_point.y <= other.top_point.y and
-            self.bottom_point.y >= other.bottom_point.y and
-            self.left_point.x <= other.left_point.x and
-            self.right_point.x >= other.right_point.x
-        )
-        return result
-"""
-
         
 class Square(Form):
     def __init__(self, center: Point, length: int) -> None:
@@ -201,28 +115,6 @@ class Square(Form):
         combined_length = length + other.length
         center_distance = Line(self.center, other.center).manhattan_distance()
         return combined_length > center_distance
-    
-    def get_y_row(self, y:int):
-        y_distance = Line(self.center, Point(self.center.x, y)).manhattan_distance()
-        distance_difference = self.length - y_distance
-        if distance_difference < 0:
-            return None
-
-        min_x = self.center.x - distance_difference
-        max_x = self.center.x + distance_difference
-
-        return Line(Point(min_x, y), Point(max_x, y))
-
-    def points(self, min_, max_) -> List[Point]:
-        start_y = self.center.y - self.length
-        end_y = self.center.y + self.length
-        if min_:
-            start_y = max(min_.y, start_y)
-        if max_:
-            end_y = min(max_.y, end_y)
-
-        result = [point for points in map(lambda line: line.points(), map(self.get_y_row, range(start_y, end_y + 1))) for point in points]
-        return result
 
     def contains_point(self, point: Point) -> bool:
         point_distance = Line(self.center, point).manhattan_distance()
@@ -237,6 +129,7 @@ class Square(Form):
             length = (n.bottom_point.y - s.top_point.y) / 2
             center_point = Point(n.center.x, s.top_point.y+length)
             return Square(center_point, length)
+
         def ew_intersection():
             (w, e) = sorted([self, other], key=lambda s: s.center.x)
             length = (w.right_point.x - e.left_point.x) / 2
@@ -340,7 +233,6 @@ class Sensor:
     def __init__(self, location: Point, beacon: Point) -> None:
         self.location = location
         self.beacon = beacon
-        self.id = ''
         self._manhattan_distance = Line(location, beacon).manhattan_distance()
         self._topmost_point = location - Point(y=self._manhattan_distance)
         self._bottommost_point = location + Point(y=self._manhattan_distance)
@@ -352,11 +244,7 @@ class Sensor:
 
     def __hash__(self) -> int:
         return hash((self.location.x, self.location.y))
-    def __repr__(self) -> str:
-        return f'Sensor({self.location})'
         
-
-
 
 class Map:
     def __init__(self) -> None:
@@ -368,6 +256,7 @@ class Map:
             for other_sensor in self.sensors[:i] + self.sensors[i+1:]:
                 if current_sensor.square.combines_with(other_sensor.square):
                     current_sensor.adjecent_sensors.append(other_sensor)
+
     @staticmethod
     def _find_circulating_sensors(input: List[Sensor]) -> List[List[Sensor]]:
         input_length = len(input)
@@ -378,7 +267,7 @@ class Map:
 
         first_sensor = input[0]
         last_sensor = input[-1]
-        if input_length > 3 and first_sensor in last_sensor.adjecent_sensors:
+        if input_length == 4 and first_sensor in last_sensor.adjecent_sensors:
             result.append(input)
 
         for next_sensor in filter(lambda s: s not in input, last_sensor.adjecent_sensors):
@@ -386,17 +275,13 @@ class Map:
             if res:
                 result += res
         return result
-
-    def _find_enclosed_points_in_quads(self, sensors: List[Sensor], min_: Point, max_: Point) -> List[Point]:
+        
+    def _find_enclosed_points(self, sensors: List[Sensor], min_: Point, max_: Point) -> List[Point]:
         nw = sorted(sensors, key=lambda s: (s.location.x*s.location.y, s.location.x, s.location.y))[0]
-
-
         while sensors[0] is not nw:
             sensors = sensors[1:]+[sensors[0]]
 
         (nw, ne, se, sw) = sensors
-        if all([c.id in 'rfix' for c in sensors]) and ne.id == 'i':
-            print('awd')
         n_intersection = nw.square.intersection(ne.square)
         e_intersection = ne.square.intersection(se.square)
         s_intersection = se.square.intersection(sw.square)
@@ -406,11 +291,8 @@ class Map:
         right = sorted(e_intersection.edges, key=lambda p: (p.x, p.y))[0]
         bottom = sorted(s_intersection.edges, key=lambda p: (p.y, -p.x))[0]
         left = sorted(w_intersection.edges, key=lambda p: (-p.x, -p.y))[0]
-        #print((3340224*4000000)+3249595)
-        if Line(top, bottom).manhattan_distance() > 10 and Line(left, right).manhattan_distance() > 10:
-            return []
-
-        if len(set([top, right, bottom, left])) != 4:
+        
+        if Line(top, bottom).manhattan_distance() > 10 or Line(left, right).manhattan_distance() > 10:
             return []
 
         center_x = left.x + (right.x - left.x)/2
@@ -431,19 +313,6 @@ class Map:
                         points.append(Point(x, y))
         return points
 
-    @staticmethod
-    def _find_enclosed_points_in_trio(sensors: List[Sensor], min_: Point, max_: Point) -> List[Point]:
-        return []
-
-    def _find_enclosed_points(self, sensors: List[Sensor], min_: Point, max_: Point) -> List[Point]:
-        if len(sensors) == 4:
-            result = self._find_enclosed_points_in_quads(sensors, min_, max_)
-            return result if result else self._find_enclosed_points_in_quads(sensors[::-1], min_, max_)
-        elif len(sensors) == 3:
-            return Map._find_enclosed_points_in_trio(sensors, min_, max_)
-        else:
-            raise NotImplementedError(f'Length of sensors ({len(sensors)}) is invalid')
-
     def find_dark_spot(self, min_: Point, max_: Point) -> List[Point]:
         list_of_circles = list(map(lambda s: Map._find_circulating_sensors([s]), self.sensors))
         circulating_sensors = [circle for circles in list_of_circles for circle in circles]
@@ -461,30 +330,10 @@ class Map:
 
         result: List[Point] = []
         for circle in distinct_circles:
-            points = self._find_enclosed_points(circle, min_, max_)
+            points = self._find_enclosed_points(circle, min_, max_) + self._find_enclosed_points(circle[::-1], min_, max_)
             if points:
                 result += points
         return result
 
     def add_sensor(self, sensor: Sensor):
         self.sensors.append(sensor)
-
-
-
-
-
-"""
-print(Line(Point(), Point(1,1)).slope())
-print(Line(Point(), Point(1,-1)).slope())
-print(Line(Point(), Point(0,-1)).slope())
-print(Line(Point(), Point(1,0)).slope())
-
-r = Rectangle(lr_diagonal=Line(Point(1, 1), Point(3,3)))
-print([p for p in [r.top_point, r.right_point, r.bottom_point, r.left_point, r.center_point]])
-r = Rectangle(rl_diagonal=Line(Point(1, 1), Point(3,3)))
-print([p for p in [r.top_point, r.right_point, r.bottom_point, r.left_point, r.center_point]])
-r = Rectangle(lr_diagonal=Line(Point(3,3), Point(1,1)))
-print([p for p in [r.top_point, r.right_point, r.bottom_point, r.left_point, r.center_point]])
-r = Rectangle(Line(Point(1,4), Point(4,1)))
-print([p for p in [r.top_point, r.right_point, r.bottom_point, r.left_point, r.center_point]])
-"""
