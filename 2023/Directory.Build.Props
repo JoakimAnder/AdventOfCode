@@ -1,0 +1,8 @@
+<Project>
+	<ItemGroup>
+		<ProjectReference 
+			Include="..\Shared\Shared.csproj" 
+			Condition="$(MSBuildProjectExtension) == '.csproj' And $(MSBuildProjectFile) != 'Shared.csproj'"
+		/>
+	</ItemGroup>
+</Project>

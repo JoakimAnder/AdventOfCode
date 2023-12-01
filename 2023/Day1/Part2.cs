@@ -1,6 +1,5 @@
 ﻿
 using Shared.Helpers;
-using Shared.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace Day1;
