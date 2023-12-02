@@ -21,7 +21,7 @@ public static class Part2
     }
 
     private readonly static Dictionary<string, int> NumberLookup = new Dictionary<string, int> {
-        { "one", 1 }, 
+        { "one", 1 },
         { "two", 2 },
         { "three", 3 },
         { "four", 4 },
@@ -32,8 +32,8 @@ public static class Part2
         { "nine", 9 },
     };
 
-    private static readonly Regex FirstRegex = new ($"{string.Join('|', NumberLookup.Keys)}|\\d");
-    private static readonly Regex LastRegex = new ($"{string.Join('|', NumberLookup.Keys.Select(name => new string(name.Reverse().ToArray())))}|\\d");
+    private static readonly Regex FirstRegex = new($"{string.Join('|', NumberLookup.Keys)}|\\d");
+    private static readonly Regex LastRegex = new($"{string.Join('|', NumberLookup.Keys.Select(name => new string(name.Reverse().ToArray())))}|\\d");
     private static int ParseCalibrationValue(string line)
     {
         var firstMatch = FirstRegex.Match(line);
