@@ -1,8 +1,21 @@
 <Project>
+  <PropertyGroup>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisThreatWarningsAsErrors>true</CodeAnalysisThreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
 	<ItemGroup>
 		<ProjectReference 
-			Include="..\Shared\Shared.csproj" 
-			Condition="$(MSBuildProjectExtension) == '.csproj' And $(MSBuildProjectFile) != 'Shared.csproj'"
+			Include="..\Infra\Infra.csproj" 
+			Condition="$(MSBuildProjectExtension) == '.csproj' And $(MSBuildProjectFile) != 'Infra.csproj'"
+		/>
+    <PackageReference
+			Include="SonarAnalyzer.CSharp"
+			Version="9.14.0.81108"
+			PrivateAssets="all"
+			Condition="$(MSBuildProjectExtension) == '.csproj'"
 		/>
 	</ItemGroup>
 </Project>

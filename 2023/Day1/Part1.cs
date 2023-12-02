@@ -1,5 +1,5 @@
 ﻿
-using Shared.Helpers;
+using Infra.Helpers;
 
 namespace Day1;
 
@@ -24,6 +24,6 @@ public static class Part1
         var firstNum = line.First(char.IsNumber);
         var lastNum = line.Last(char.IsNumber);
 
-        return int.Parse($"{firstNum}{lastNum}");
+        return Helper.ParseInt($"{firstNum}{lastNum}");
     }
 }

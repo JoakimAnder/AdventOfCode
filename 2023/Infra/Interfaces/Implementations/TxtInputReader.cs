@@ -1,6 +1,6 @@
 ﻿
 
-namespace Shared.Interfaces.Implementations;
+namespace Infra.Interfaces.Implementations;
 
 public class TxtInputReader(string filePath) : IInputReader
 {
@@ -16,19 +16,19 @@ public class TxtInputReader(string filePath) : IInputReader
         }
     }
 
-    public Task<IEnumerable<T>> ParseLines<T>(Func<string, T> parser)
+    public async Task<IEnumerable<T>> ParseLines<T>(Func<string, T> parser)
     {
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using var file = new StreamReader(fileStream, System.Text.Encoding.UTF8, true, 128);
 
         var result = Enumerable.Empty<T>();
         string? line;
-        while ((line = file.ReadLine()) is not null)
+        while ((line = await file.ReadLineAsync()) is not null)
         {
             var parsedValue = parser(line);
             result = result.Prepend(parsedValue);
         }
-        return Task.FromResult(result);
+        return result;
     }
 
 }

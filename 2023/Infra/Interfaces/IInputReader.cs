@@ -1,5 +1,5 @@
 ﻿
-namespace Shared.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IInputReader
 {

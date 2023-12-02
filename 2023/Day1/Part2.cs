@@ -1,5 +1,5 @@
 ﻿
-using Shared.Helpers;
+using Infra.Helpers;
 using System.Text.RegularExpressions;
 
 namespace Day1;
@@ -20,7 +20,7 @@ public static class Part2
         Console.WriteLine("The sum of all of the calibration values is {0}", sum);
     }
 
-    private readonly static IDictionary<string, int> NumberLookup = new Dictionary<string, int> {
+    private readonly static Dictionary<string, int> NumberLookup = new Dictionary<string, int> {
         { "one", 1 }, 
         { "two", 2 },
         { "three", 3 },
@@ -40,10 +40,10 @@ public static class Part2
         var lastMatch = LastRegex.Match(new string(line.Reverse().ToArray()));
         var lastMatchValue = new string(lastMatch.Value.Reverse().ToArray());
 
-        var firstDigit = NumberLookup.TryGetValue(firstMatch.Value, out var fnum) ? fnum : int.Parse(firstMatch.ValueSpan);
-        var lastDigit = NumberLookup.TryGetValue(lastMatchValue, out var lnum) ? lnum : int.Parse(lastMatch.ValueSpan);
+        var firstDigit = NumberLookup.TryGetValue(firstMatch.Value, out var fnum) ? fnum : Helper.ParseInt(firstMatch.ValueSpan);
+        var lastDigit = NumberLookup.TryGetValue(lastMatchValue, out var lnum) ? lnum : Helper.ParseInt(lastMatch.ValueSpan);
 
-        return int.Parse($"{firstDigit}{lastDigit}");
+        return Helper.ParseInt($"{firstDigit}{lastDigit}");
 
     }
 }

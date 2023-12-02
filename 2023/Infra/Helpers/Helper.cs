@@ -1,8 +1,9 @@
 ﻿
-using Shared.Interfaces;
-using Shared.Interfaces.Implementations;
+using Infra.Interfaces;
+using Infra.Interfaces.Implementations;
+using System.Globalization;
 
-namespace Shared.Helpers;
+namespace Infra.Helpers;
 
 public static class Helper
 {
@@ -12,5 +13,8 @@ public static class Helper
         if (part == 0)
             return $"{partPath}{Path.DirectorySeparatorChar}Inputs{Path.DirectorySeparatorChar}Input.txt";
         return $"{partPath}{Path.DirectorySeparatorChar}Inputs{Path.DirectorySeparatorChar}SmallInput{part}.txt";
-    } 
+    }
+
+
+    public static int ParseInt(ReadOnlySpan<char> input) => int.Parse(input, NumberFormatInfo.InvariantInfo);
 }
