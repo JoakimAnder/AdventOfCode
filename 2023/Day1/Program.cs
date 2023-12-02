@@ -1,21 +1,6 @@
 ﻿
-
 using Day1;
+using Infra.Helpers;
 
-Console.WriteLine("Part 1\n");
-Part1.Run();
-
-
-
-Console.WriteLine("\n\nPart 2\n");
-Part2.Run();
-
-
-
-
-
-
-
-
-
-
+var runner = Helper.GetRunner(Part1.Run, Part2.Run);
+runner.Run();

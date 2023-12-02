@@ -2,7 +2,7 @@
 
 namespace Infra.Interfaces.Implementations;
 
-public class TxtInputReader(string filePath) : IInputReader
+internal sealed class TxtInputReader(string filePath) : IInputReader
 {
     public IEnumerable<string> LinesAsEnumerable()
     {
