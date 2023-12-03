@@ -16,19 +16,20 @@ internal sealed class TxtInputReader(string filePath) : IInputReader
         }
     }
 
-    public async Task<IEnumerable<T>> ParseLines<T>(Func<string, T> parser)
+    public IEnumerable<T> ParseLines<T>(Func<string, T> parser) => ParseLines((line, _) => parser(line));
+    public IEnumerable<T> ParseLines<T>(Func<string, int, T> parser)
     {
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using var file = new StreamReader(fileStream, System.Text.Encoding.UTF8, true, 128);
 
         var result = Enumerable.Empty<T>();
         string? line;
-        while ((line = await file.ReadLineAsync()) is not null)
+        var index = 0;
+        while ((line = file.ReadLine()) is not null)
         {
-            var parsedValue = parser(line);
+            var parsedValue = parser(line, index++);
             result = result.Prepend(parsedValue);
         }
         return result;
     }
-
 }
