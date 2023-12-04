@@ -15,6 +15,6 @@ public static class Helper
         return $"{partPath}{Path.DirectorySeparatorChar}Inputs{Path.DirectorySeparatorChar}SmallInput{part}.txt";
     }
 
-    public static IRunner GetRunner(params Action[] parts) => new Runner(parts);
+    public static IRunner GetRunner(params IPuzzlePart[] parts) => new Runner(parts);
     public static int ParseInt(ReadOnlySpan<char> input) => int.Parse(input, NumberFormatInfo.InvariantInfo);
 }

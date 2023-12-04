@@ -1,11 +1,14 @@
 ﻿
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day1;
 
-public static class Part1
+public class Part1 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => 55090;
+
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
 
@@ -17,6 +20,7 @@ public static class Part1
         }
 
         Console.WriteLine("The sum of all of the calibration values is {0}", sum);
+        return sum;
     }
 
     private static int ParseCalibrationValue(string line)

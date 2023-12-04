@@ -2,7 +2,7 @@
 
 namespace Infra.Interfaces.Implementations;
 
-internal sealed class Runner(Action[] parts) : IRunner
+internal sealed class Runner(IPuzzlePart[] parts) : IRunner
 {
     public const double MegaDivisor = 1_000_000.0;
     public static void WriteDivider() => Console.WriteLine("\n---------------------------------------------------------------------\n");
@@ -29,7 +29,7 @@ internal sealed class Runner(Action[] parts) : IRunner
         Console.ReadKey();
     }
 
-    private static void Diagnose(Action action)
+    private static void Diagnose(IPuzzlePart part)
     {
 #pragma warning disable S1215 // "GC.Collect" should not be called
         GC.Collect();
@@ -41,7 +41,7 @@ internal sealed class Runner(Action[] parts) : IRunner
         var memoryBefore = Process.GetCurrentProcess().VirtualMemorySize64;
         sw.Start();
 
-        action();
+        var result = part.Run();
 
         sw.Stop();
         var memoryAfter = Process.GetCurrentProcess().VirtualMemorySize64;
@@ -49,5 +49,7 @@ internal sealed class Runner(Action[] parts) : IRunner
         var memorydiff = (memoryAfter - memoryBefore) / MegaDivisor;
         Console.WriteLine("\nDuration: {0}ms", sw.ElapsedMilliseconds);
         Console.WriteLine("Memory: {0:0.00}MB", memorydiff);
+        if (part.ExpectedResult is not null)
+            Console.WriteLine("Is correct answer: {0}", part.ExpectedResult.Equals(result));
     }
 }

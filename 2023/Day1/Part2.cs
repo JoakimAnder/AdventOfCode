@@ -1,12 +1,14 @@
 ﻿
 using Infra.Helpers;
+using Infra.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace Day1;
 
-public static class Part2
+public class Part2 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => 54845;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
 
@@ -18,9 +20,10 @@ public static class Part2
         }
 
         Console.WriteLine("The sum of all of the calibration values is {0}", sum);
+        return sum;
     }
 
-    private readonly static Dictionary<string, int> NumberLookup = new Dictionary<string, int> {
+    private readonly static Dictionary<string, int> NumberLookup = new() {
         { "one", 1 },
         { "two", 2 },
         { "three", 3 },
@@ -32,8 +35,8 @@ public static class Part2
         { "nine", 9 },
     };
 
-    private static readonly Regex FirstRegex = new($"{string.Join('|', NumberLookup.Keys)}|\\d");
-    private static readonly Regex LastRegex = new($"{string.Join('|', NumberLookup.Keys.Select(name => new string(name.Reverse().ToArray())))}|\\d");
+    private static readonly Regex FirstRegex = new($"\\d|{string.Join('|', NumberLookup.Keys)}");
+    private static readonly Regex LastRegex = new($"\\d|{string.Join('|', NumberLookup.Keys.Select(name => new string(name.Reverse().ToArray())))}");
     private static int ParseCalibrationValue(string line)
     {
         var firstMatch = FirstRegex.Match(line);

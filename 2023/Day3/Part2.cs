@@ -2,12 +2,14 @@
 using Day3.Classes;
 using Infra.Classes;
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day3;
 
-public static class Part2
+public class Part2 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
 
@@ -32,6 +34,7 @@ public static class Part2
         }
 
         Console.WriteLine("The sum of all of the gear ratios in your engine schematic is {0}", sum);
+        return sum;
     }
 
     private static int CalculateGearRatio(Point2D gearPlacement, IEnumerable<SchematicNumber> numbers)

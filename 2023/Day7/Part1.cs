@@ -1,11 +1,13 @@
 ﻿
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day7;
 
-public static class Part1
+public class Part1 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory, 1));
 
@@ -15,6 +17,7 @@ public static class Part1
         }
 
         Console.WriteLine("");
+        return input;
     }
 
 }

@@ -2,12 +2,14 @@
 using Day3.Classes;
 using Infra.Classes;
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day3;
 
-public static partial class Part1
+public partial class Part1 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
 
@@ -31,6 +33,7 @@ public static partial class Part1
         }
 
         Console.WriteLine("The sum of all of the part numbers in the engine schematic is {0}", sum);
+        return sum;
     }
 
     private static bool IsMachinePart(this SchematicNumber number, Point2D[] symbols) =>

@@ -1,12 +1,14 @@
 ﻿
 using Day4.Classes;
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day4;
 
-public static class Part1
+public class Part1 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
 
@@ -20,6 +22,7 @@ public static class Part1
         }
 
         Console.WriteLine("The cards are worth {0} points in total.", sum);
+        return sum;
     }
 
 }

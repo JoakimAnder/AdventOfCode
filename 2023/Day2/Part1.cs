@@ -1,12 +1,14 @@
 ﻿
 using Day2.Classes;
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day2;
 
-public static class Part1
+public class Part1 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
         var constraints = new Dictionary<CubeColor, int> {
@@ -25,6 +27,7 @@ public static class Part1
         }
 
         Console.WriteLine("The sum of the IDs of those games is {0}", sum);
+        return sum;
     }
 
 

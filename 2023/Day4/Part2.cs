@@ -1,13 +1,14 @@
 ﻿
 using Day4.Classes;
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day4;
 
-public static class Part2
+public class Part2 : IPuzzlePart
 {
-    private const int OriginalCardCount = 1;
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
 
@@ -16,7 +17,7 @@ public static class Part2
         foreach (var line in input.LinesAsEnumerable())
         {
             var card = InputParser.ParseCard(line);
-            var copiesCount = cardCopies.TryGetValue(card.Id, out var c) ? c : 0;
+            cardCopies.TryGetValue(card.Id, out var copiesCount);
             copiesCount += OriginalCardCount;
             totalCardCount += copiesCount;
 
@@ -32,24 +33,8 @@ public static class Part2
         }
 
         Console.WriteLine("You end up with {0} total scratchcards.", totalCardCount);
+        return sum;
     }
 
-    private static int CalculateCardCount(int index, ScratchCard[] scratchCards)
-    {
-        if (index >= scratchCards.Length)
-            return 0; // Or 1, it's unclear in the given example.
-
-        var currentCard = scratchCards[index];
-        var wonCardsCount = currentCard.CalculateMatchingNumbersCount();
-
-        var totalCopyCount = 1;
-        for (int i = 0; i < wonCardsCount; i++)
-        {
-            var copies = CalculateCardCount(index + i + 1, scratchCards);
-            totalCopyCount += copies;
-        }
-
-        return totalCopyCount;
-    }
-
+    private const int OriginalCardCount = 1;
 }

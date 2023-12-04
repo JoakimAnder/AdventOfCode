@@ -1,12 +1,14 @@
 ﻿
 using Day2.Classes;
 using Infra.Helpers;
+using Infra.Interfaces;
 
 namespace Day2;
 
-public static class Part2
+public class Part2 : IPuzzlePart
 {
-    public static void Run()
+    public object? ExpectedResult => null;
+    public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
         var sum = 0;
@@ -19,6 +21,7 @@ public static class Part2
         }
 
         Console.WriteLine("The sum of the powers of those sets is {0}", sum);
+        return sum;
     }
 
 }

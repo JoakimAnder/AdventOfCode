@@ -2,5 +2,7 @@
 using Day6;
 using Infra.Helpers;
 
-var runner = Helper.GetRunner(Part1.Run, Part2.Run);
+var part1 = new Part1();
+var part2 = new Part2();
+var runner = Helper.GetRunner(part1, part2);
 runner.Run();
