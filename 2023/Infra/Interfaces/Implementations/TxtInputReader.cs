@@ -28,7 +28,7 @@ internal sealed class TxtInputReader(string filePath) : IInputReader
         while ((line = file.ReadLine()) is not null)
         {
             var parsedValue = parser(line, index++);
-            result = result.Prepend(parsedValue);
+            result = result.Append(parsedValue);
         }
         return result;
     }
