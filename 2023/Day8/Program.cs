@@ -1,5 +1,4 @@
 ﻿
-using Day8;
 using Infra.Helpers;
 
 var part1 = new Part1();

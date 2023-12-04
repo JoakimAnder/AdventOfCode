@@ -1,8 +1,6 @@
-﻿
-using Day3.Classes;
-using Infra.Classes;
-using Infra.Helpers;
+﻿using Infra.Helpers;
 using Infra.Interfaces;
+using Infra.Models;
 
 namespace Day3;
 

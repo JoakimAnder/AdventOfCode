@@ -1,0 +1,6 @@
+﻿This is a placeholder for the input.
+To run the program, follow the following steps:
+Create a copy of this file.
+Rename it to Input.txt.
+Paste your input into that file.
+Run the program.

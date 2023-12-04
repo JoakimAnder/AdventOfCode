@@ -1,6 +1,4 @@
-﻿
-using Day7;
-using Infra.Helpers;
+﻿using Infra.Helpers;
 
 var part1 = new Part1();
 var part2 = new Part2();

@@ -1,8 +1,6 @@
-﻿
-using Day3.Classes;
-using Infra.Classes;
-using Infra.Helpers;
+﻿using Infra.Helpers;
 using Infra.Interfaces;
+using Models;
 
 namespace Day3;
 
@@ -36,13 +34,5 @@ public partial class Part1 : IPuzzlePart
         return sum;
     }
 
-    private static bool IsMachinePart(this SchematicNumber number, Point2D[] symbols) =>
-        number.Placement.Any(p => p.IsNextToAny(symbols));
 
-    private static bool IsNextToAny(this Point2D point, Point2D[] symbols)
-    {
-        var minX = point.X - 1;
-        var maxX = point.X + 1;
-        return Array.Exists(symbols, s => s.X >= minX && s.X <= maxX);
-    }
 }
