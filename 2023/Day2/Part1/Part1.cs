@@ -6,10 +6,10 @@ namespace Puzzle;
 
 public class Part1 : IPuzzlePart
 {
-    public object? ExpectedResult => null;
+    public object? ExpectedResult => 2563;
     public object Run()
     {
-        var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
+        var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part1)));
         var constraints = new Dictionary<CubeColor, int> {
             { CubeColor.Red, 12 },
             { CubeColor.Green, 13 },

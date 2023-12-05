@@ -7,10 +7,10 @@ public class Part2 : IPuzzlePart
 {
     private const int OriginalCardCount = 1;
 
-    public object? ExpectedResult => null;
+    public object? ExpectedResult => 10425665;
     public object Run()
     {
-        var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
+        var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part2)));
 
         var cardCopies = new Dictionary<int, int>();
         var totalCardCount = 0;

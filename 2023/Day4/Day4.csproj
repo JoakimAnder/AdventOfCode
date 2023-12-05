@@ -8,7 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="Part1\Inputs\Input.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Part1\Inputs\Input_placeholder.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Part2\Inputs\Input.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Part2\Inputs\Input_placeholder.txt">

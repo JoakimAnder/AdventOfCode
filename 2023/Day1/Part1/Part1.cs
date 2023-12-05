@@ -9,7 +9,7 @@ public class Part1 : IPuzzlePart
 
     public object Run()
     {
-        var input = Helper.GetInputReader(Helper.GetInputPath(Environment.CurrentDirectory));
+        var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part1)));
 
         var sum = 0;
         foreach (var line in input.LinesAsEnumerable())
