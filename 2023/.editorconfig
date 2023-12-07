@@ -6,6 +6,9 @@ dotnet_diagnostic.CA1062.severity = suggestion
 dotnet_diagnostic.CA1303.severity = suggestion
 # CA2007: Do not directly await a Task
 dotnet_diagnostic.CA2007.severity = suggestion
+# S125: Sections of code should not be commented out
+dotnet_diagnostic.S125.severity = suggestion
+
 
 csharp_indent_labels = one_less_than_current
 csharp_using_directive_placement = outside_namespace:silent
