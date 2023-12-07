@@ -1,23 +1,35 @@
 ﻿using Infra.Helpers;
 using Infra.Interfaces;
+using Models;
 
 namespace Puzzle;
 
 public class Part2 : IPuzzlePart
 {
-    public object? ExpectedResult => null;
+    public object? ExpectedResult => 46L;
     public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part2)));
 
-        foreach (var line in input.LinesAsEnumerable())
+        var (seeds, maps) = InputParser.Parse2(input.LinesAsEnumerable());
+
+        var lowestLocationNumber = FindLowestLocationNumber(seeds, maps);
+
+        Console.WriteLine("The lowest location number that corresponds to any of the initial seed numbers is {0}", lowestLocationNumber);
+        return lowestLocationNumber;
+    }
+    private static long FindLowestLocationNumber(IEnumerable<MapRange> ranges, IList<Map> maps)
+    {
+        var currentState = "seed";
+
+        while (currentState != "location")
         {
-            var parsedLine = InputParser.Parse(line);
-            Console.WriteLine(parsedLine);
+            var map = maps.First(m => m.From == currentState);
+            ranges = ranges.SelectMany(map.MapRange).ToArray();
+            currentState = map.To;
         }
 
-        Console.WriteLine("");
-        return input;
+        ranges = ranges.OrderBy(r => r.SourceStart).ToArray();
+        return ranges.MinBy(r => r.SourceStart).SourceStart;
     }
-
 }
