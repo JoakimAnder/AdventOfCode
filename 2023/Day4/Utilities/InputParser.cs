@@ -1,4 +1,5 @@
 ﻿using Infra.Helpers;
+using Models;
 using System.Text.RegularExpressions;
 
 namespace Puzzle;
