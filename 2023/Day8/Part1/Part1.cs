@@ -5,19 +5,27 @@ namespace Puzzle;
 
 public class Part1 : IPuzzlePart
 {
-    public object? ExpectedResult => null;
+    public object? ExpectedResult => 6;
     public object Run()
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part1)));
+        const string startNodeId = "AAA";
+        const string endNodeId = "ZZZ";
+        var steps = 0;
+        var (directions, network) = InputParser.Parse(input.LinesAsEnumerable());
+        var currentNode = network.First(n => n.Id == startNodeId);
 
-        foreach (var line in input.LinesAsEnumerable())
+        while (currentNode.Id != endNodeId)
         {
-            var parsedLine = InputParser.Parse(line);
-            Console.WriteLine(parsedLine);
+            var instruction = directions[steps % directions.Length];
+            var nextNode = currentNode.Navigate(instruction);
+            steps++;
+            //Console.WriteLine("{0}: {1} - {2}", steps, currentNode.Id, nextNodeId);
+            currentNode = nextNode;
         }
 
-        Console.WriteLine("");
-        return input;
+        Console.WriteLine("{0} steps are required to reach ZZZ", steps);
+        return steps;
     }
 
 }
