@@ -10,6 +10,8 @@ public static partial class Helper
 {
     [GeneratedRegex(@"\d+")]
     public static partial Regex NumberRegex();
+    [GeneratedRegex(@"\w+")]
+    public static partial Regex WordRegex();
     public static IInputReader GetInputReader(string filePath) => new TxtInputReader(filePath);
     public static string GetInputPath(string className) =>
         $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{className}{Path.DirectorySeparatorChar}Inputs{Path.DirectorySeparatorChar}Input.txt";
