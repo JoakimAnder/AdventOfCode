@@ -10,13 +10,15 @@ public class Part1 : IPuzzlePart
     {
         var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part1)));
 
+        var sum = 0;
         foreach (var line in input.LinesAsEnumerable())
         {
             var parsedLine = InputParser.Parse(line);
-            Console.WriteLine(parsedLine);
+            var extrapolatedValue = parsedLine.ExtrapolatedValue();
+            sum += extrapolatedValue;
         }
 
-        Console.WriteLine("");
+        Console.WriteLine("The sum of the extrapolated values is {0}", sum);
         return input;
     }
 

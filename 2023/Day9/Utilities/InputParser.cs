@@ -1,9 +1,17 @@
-﻿namespace Puzzle;
+﻿using Infra.Helpers;
+using Models;
+
+namespace Puzzle;
 
 public static class InputParser
 {
-    public static object Parse(string line)
+    public static History Parse(string line)
     {
-        return line;
+        var readings = Helper.NumberRegex()
+            .Matches(line)
+            .Select(m => Helper.ParseInt(m.ValueSpan))
+            .ToArray();
+
+        return new History(readings);
     }
 }
