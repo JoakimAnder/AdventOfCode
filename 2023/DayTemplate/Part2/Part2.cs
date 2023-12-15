@@ -8,16 +8,12 @@ public class Part2 : IPuzzlePart
     public object? ExpectedResult => null;
     public object Run()
     {
-        var input = Helper.GetInputReader(Helper.GetInputPath(nameof(Part2)));
+        var input = Helper.GetInputReader(Helper.GetInputPath(GetType().Name));
 
-        foreach (var line in input.LinesAsEnumerable())
-        {
-            var parsedLine = InputParser.Parse(line);
-            Console.WriteLine(parsedLine);
-        }
+        var parsed = InputParser.Parse(input);
 
         Console.WriteLine("");
-        return input;
+        return parsed;
     }
 
 }

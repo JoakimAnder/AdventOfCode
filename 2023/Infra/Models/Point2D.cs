@@ -1,8 +1,7 @@
 ﻿namespace Infra.Models;
 
-public readonly record struct Point2D(double X, double Y)
+public readonly record struct Point2D(int X, int Y)
 {
-
     public readonly Point2D Normalized()
     {
         var xx = X / Absolute().X;
@@ -17,8 +16,8 @@ public readonly record struct Point2D(double X, double Y)
         return new Point2D(xx, yy);
     }
 
-    public static implicit operator Point2D((double x, double y) tuple) => ToPoint2D(tuple);
-    public static Point2D ToPoint2D((double x, double y) tuple) => new(tuple.x, tuple.y);
+    public static implicit operator Point2D((int x, int y) tuple) => ToPoint2D(tuple);
+    public static Point2D ToPoint2D((int x, int y) tuple) => new(tuple.x, tuple.y);
 
 
 

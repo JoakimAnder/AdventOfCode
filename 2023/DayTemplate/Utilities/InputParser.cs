@@ -1,9 +1,11 @@
-﻿namespace Puzzle;
+﻿using Infra.Interfaces;
+
+namespace Puzzle;
 
 public static class InputParser
 {
-    public static object Parse(string line)
+    public static object Parse(IInputReader reader)
     {
-        return line;
+        return reader;
     }
 }

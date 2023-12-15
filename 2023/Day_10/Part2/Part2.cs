@@ -1,0 +1,32 @@
+﻿using Infra.Helpers;
+using Infra.Interfaces;
+
+namespace Puzzle;
+
+public class Part2 : IPuzzlePart
+{
+    public object? ExpectedResult => 82000210;
+    public object Run()
+    {
+        var input = Helper.GetInputReader(Helper.GetInputPath(GetType().Name));
+
+        var image = InputParser.Parse(input);
+        var expandedImage = image.Expand(1000000);
+
+        var sum = 0L;
+        for (var i = 0; i < expandedImage.Galaxies.Count(); i++)
+        {
+            var currentGalaxy = expandedImage.Galaxies.ElementAt(i);
+            for (var j = i + 1; j < expandedImage.Galaxies.Count(); j++)
+            {
+                var nextGalaxy = expandedImage.Galaxies.ElementAt(j);
+                var distance = currentGalaxy.DistanceTo(nextGalaxy);
+                sum += distance;
+            }
+        }
+
+        Console.WriteLine("The sum of these lengths is {0}", sum);
+        return sum;
+    }
+
+}
