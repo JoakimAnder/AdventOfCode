@@ -5,5 +5,5 @@ public partial class Puzzle : IPuzzle
 {
     private const int YEAR = 2023;
     private const int DAY = 11;
-    private const string NAME = "";
+    private const string NAME = "Cosmic Expansion";
 }

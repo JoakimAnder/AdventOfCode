@@ -2,5 +2,5 @@
 public interface ILoader
 {
     bool IsLoading { get; }
-    IDisposable StartLoading();
+    IDisposable StartLoading(Action? onFinished = null);
 }

@@ -35,9 +35,13 @@ public class Loader : ILoader, INotifyPropertyChanged
         RefreshIsLoading();
     }
 
-    public IDisposable StartLoading()
+    public IDisposable StartLoading(Action? onFinished = null)
     {
-        var loader = new InnerLoader(StopLoading);
+        var loader = new InnerLoader(l =>
+        {
+            StopLoading(l);
+            onFinished?.Invoke();
+        });
         _loaders.Add(loader);
         RefreshIsLoading();
         return loader;

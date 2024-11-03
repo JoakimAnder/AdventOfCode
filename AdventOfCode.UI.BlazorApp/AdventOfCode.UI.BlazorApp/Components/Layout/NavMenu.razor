@@ -1,0 +1,60 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">AdventOfCode.UI.BlazorApp</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <ul class="nav flex-column">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+
+            @foreach (var year in SupportedYears)
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="@(SelectedYear == year ? "puzzles/" : $"puzzles/{year}")" Match="NavLinkMatch.Prefix">
+                        Year @year
+                    </NavLink>
+                </li>
+
+                @if (SelectedYear == year)
+                {
+                    @foreach (var day in Enumerable.Range(1, 24))
+                    {
+                        <li class="nav-item ps-3">
+                            <NavLink class="nav-link" href="@($"puzzles/{year}/{day}")">
+                                Day @day
+                            </NavLink>
+                        </li>
+                    }
+                }
+            }
+        </ul>
+    </nav>
+</div>
+
+
+@code {
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+
+    private int[] SupportedYears = [2023, 2024];
+    private int SelectedYear { get; set; } = 0;
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+        var regex = new System.Text.RegularExpressions.Regex("puzzles/(\\d+)");
+        var match = regex.Match(uri);
+
+        if (match.Groups.Count >= 2)
+            SelectedYear = int.Parse(match.Groups.Values.Last().Value);
+    }
+}
