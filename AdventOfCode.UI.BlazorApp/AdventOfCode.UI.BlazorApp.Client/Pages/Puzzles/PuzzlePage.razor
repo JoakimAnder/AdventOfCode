@@ -1,0 +1,76 @@
+﻿@using AdventOfCode.UI.BlazorApp.Client.Clients
+@using AdventOfCode.UI.Shared.Helpers
+@using Refit
+
+@page "/puzzles/{Year:int}/{Day:int}"
+@implements IAsyncDisposable
+@inject IServerClient serverClient
+@inject ILogger<PuzzlePage> logger
+@inject ILoader getPuzzleLoader
+
+<PageTitle>@PageTitle</PageTitle>
+
+<main>
+    @if (getPuzzleLoader.IsLoading)
+    {
+        <div class="spinner-border" role="status">
+            <span class="sr-only" />
+        </div>
+    }
+    else
+    {
+        if (Puzzle is null)
+        {
+            <div>
+                Puzzle is not completed
+            </div>
+        }
+        else
+        {
+            <PuzzleComponent Puzzle="Puzzle" />
+        }
+    }
+</main>
+
+
+
+@code {
+    [Parameter]
+    public int Year { get; set; }
+
+    [Parameter]
+    public int Day { get; set; }
+
+    private Puzzle? Puzzle { get; set; }
+    private CancellationTokenSource cts = new();
+
+    private string PageTitle => Puzzle is null ? $"{Year} - {Day}" : Puzzle.Name;
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Puzzle is null)
+            await FetchData();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task FetchData()
+    {
+        using var _ = getPuzzleLoader.StartLoading(StateHasChanged);
+        StateHasChanged();
+        try
+        {
+            Puzzle = await serverClient.GetPuzzle(Year, Day, cts.Token);
+        }
+        catch (ApiException ex)
+        {
+            // Notify user..
+            logger.LogError(ex, "Error when fetching data for puzzle {year}/{day}", Year, Day);
+        }
+    }
+
+}

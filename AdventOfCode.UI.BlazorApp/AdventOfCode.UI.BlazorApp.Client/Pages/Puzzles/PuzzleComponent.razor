@@ -1,0 +1,19 @@
+﻿@using AdventOfCode.UI.BlazorApp.Client.Clients
+
+@rendermode InteractiveWebAssembly
+@inject IServerClient serverClient
+
+<div>
+    <h1>@Puzzle.Name</h1>
+
+    <SolutionComponent Code="@Puzzle.OneStarCode" Day="@Puzzle.Day" Name="One star solution" ServerClient="@serverClient" Year="@Puzzle.Year" Stars="1" />
+    <br />
+    <SolutionComponent Code="@Puzzle.TwoStarCode" Day="@Puzzle.Day" Name="Two star solution" ServerClient="@serverClient" Year="@Puzzle.Year" Stars="2" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Puzzle Puzzle { get; set; } = default!;
+
+
+}

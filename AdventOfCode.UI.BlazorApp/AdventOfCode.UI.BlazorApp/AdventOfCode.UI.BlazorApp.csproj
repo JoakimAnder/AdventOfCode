@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AdventOfCode.Solutions\AdventOfCode.Solutions.csproj" />
+    <ProjectReference Include="..\..\AdventOfCode.UI.Shared\AdventOfCode.UI.Shared.csproj" />
+    <ProjectReference Include="..\AdventOfCode.UI.BlazorApp.Client\AdventOfCode.UI.BlazorApp.Client.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Pages\" />
+  </ItemGroup>
+
+</Project>

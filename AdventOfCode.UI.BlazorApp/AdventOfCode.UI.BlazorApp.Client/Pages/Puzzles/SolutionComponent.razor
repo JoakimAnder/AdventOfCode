@@ -1,0 +1,121 @@
+﻿@using AdventOfCode.UI.BlazorApp.Client.Clients
+@using System.Text.Json
+@using AdventOfCode.UI.Shared.Helpers
+
+@implements IAsyncDisposable
+@inject ILoader runLoader
+
+<article class="container">
+    <h2>@Name</h2>
+    
+    <div class="input-group">
+        <label for="input" class="input-group-text">Input:</label>
+        <InputTextArea id="input" @bind-Value="@Input" class="form-control" />
+    </div>
+
+    <div class="row">
+        @if (runLoader.IsLoading)
+        {
+            <button @onclick="Cancel" class="btn">Cancel</button>
+        }
+        else
+        {
+            <button @onclick="OnTryClicked" class="btn">Try</button>
+        }
+    </div>
+    
+    <div class="row">
+        @if (Result is not null)
+        {
+            <output>
+                Result: @JsonSerializer.Serialize(Result.Result)
+                <br />
+                Run time: @PrettifyRunTime(Result.RunTime)
+                <br />
+                Used memory: @PrettifyBytes(Result.UsedHeapSize)
+                <br />
+                Total memory: @PrettifyBytes(Result.TotalHeapSize)
+                <br />
+                Memory limit: @PrettifyBytes(Result.HeapSizeLimit)
+            </output>
+        }
+    </div>
+
+    <div class="input-group">
+        <label for="code" class="input-group-text">Code:</label>
+        <textarea id="code" readonly class="form-control">@Code</textarea>
+    </div>
+</article>
+
+@code {
+    private const double MegaDivisor = 1_000_000.0;
+    private const double GigaDivisor = 1_000_000_000.0;
+
+    [Parameter, EditorRequired]
+    public IServerClient ServerClient { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public int Year { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public int Day { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public int Stars { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+
+    [Parameter]
+    public string? Code { get; set; }
+
+    private string Input { get; set; } = "";
+    private SolutionResult? Result { get; set; }
+    private CancellationTokenSource? cts;
+
+    private async Task OnTryClicked()
+    {
+        if (string.IsNullOrEmpty(Input))
+            return;
+
+        await Cancel();
+        cts = new CancellationTokenSource();
+        using var _ = runLoader.StartLoading();
+        var result = await ServerClient.TrySolution(Year, Day, Stars, new(Input), cts.Token);
+
+        Result = result;
+    }
+
+    private async Task Cancel()
+    {
+        if (cts is not null)
+            await cts.CancelAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await Cancel();
+    }
+
+    private static string PrettifyRunTime(TimeSpan timeSpan)
+    {
+        if (timeSpan.TotalMinutes >= 1)
+            return timeSpan.ToString();
+
+        if (timeSpan.TotalSeconds >= 1)
+            return $"{(int)timeSpan.TotalSeconds}s {timeSpan.TotalMilliseconds:.00}ms";
+
+        return $"{timeSpan.TotalMilliseconds:0.0000}ms";
+    }
+
+    private static string PrettifyBytes(long bytes)
+    {
+        if (bytes > GigaDivisor)
+            return $"{bytes / GigaDivisor:.000}gb";
+
+        if (bytes > MegaDivisor)
+            return $"{bytes / MegaDivisor:.000}mb";
+
+        return $"{bytes}b";
+    }
+}
