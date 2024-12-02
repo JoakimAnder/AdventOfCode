@@ -6,6 +6,6 @@ public partial class Puzzle : IPuzzle
 {
     private const int YEAR = 2024;
     private const int DAY = 2;
-    private const string NAME = "";
+    private const string NAME = "Red-Nosed Reports";
 }
 

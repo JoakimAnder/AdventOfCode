@@ -32,18 +32,20 @@ Console.WriteLine("""
 
 while (true)
 {
-    Console.WriteLine("Which year are you interested in?");
+    var currentYear = DateTime.Now.Year.ToString();
+    Console.WriteLine($"Which year are you interested in? (default: {currentYear})");
     var year = Console.ReadLine();
 
     if (year == BACK_COMMAND || year == EXIT_COMMAND)
         break;
 
     if (string.IsNullOrEmpty(year))
-        continue;
+        year = currentYear;
 
     while (true)
     {
-        Console.WriteLine("Which day are you interested in?");
+        var currentDay = DateTime.Now.Day.ToString();
+        Console.WriteLine($"Which day are you interested in? (default: {currentDay})");
         var day = Console.ReadLine();
 
         if (day == EXIT_COMMAND)
@@ -53,7 +55,7 @@ while (true)
             break;
 
         if (string.IsNullOrEmpty(day))
-            continue;
+            day = currentDay;
 
         while (true)
         {
@@ -76,14 +78,23 @@ while (true)
                 continue;
             }
 
-            Console.WriteLine("What's the input? (End input by entering '_end_')");
+            Console.WriteLine("What's the breakout line for entering the input? (default: newline)");
+            var breakLine = Console.ReadLine();
+            if (breakLine == EXIT_COMMAND)
+                goto EXIT;
+
+            if (breakLine == BACK_COMMAND)
+                break;
+
+            var prettyBreakLine = string.IsNullOrEmpty(breakLine) ? "an empty line" : $"'{breakLine}'";
+            Console.WriteLine($"What's the input? (End input by entering {prettyBreakLine})");
             var lines = new List<string>();
 
             while (true)
             {
                 var currentLine = Console.ReadLine();
 
-                if (currentLine == "_end_")
+                if (currentLine == breakLine)
                     break;
 
                 lines.Add(currentLine ?? string.Empty);
