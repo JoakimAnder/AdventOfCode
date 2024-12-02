@@ -116,14 +116,11 @@ while (true)
 
             Console.WriteLine($"""
                 -----------------------------------------------------
+
                 Result: {result.Result}
 
                 Duration: {result.RunTime}
 
-                Memory (doesn't work):
-                    Used: {result.UsedHeapSize}b
-                    Total: {result.TotalHeapSize}b
-                    Memory: {result.HeapSizeLimit}b
                 -----------------------------------------------------
                 """);
         }
