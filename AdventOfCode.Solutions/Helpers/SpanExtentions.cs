@@ -18,6 +18,6 @@ public static class SpanExtentions
         return ints;
     }
 
-    private static Range ToRange(this ValueMatch match)
+    public static Range ToRange(this ValueMatch match)
         => new(match.Index, match.Index + match.Length);
 }
