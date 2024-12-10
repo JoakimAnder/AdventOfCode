@@ -6,7 +6,7 @@ namespace AdventOfCode.Solutions.Puzzles.Year2024.Day06;
 
 public partial class OneStarSolution : ISolution
 {
-    private static readonly ImmutableArray<Point2D> Directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
+    internal static readonly ImmutableArray<Point2D> WalkDirections = [Directions.North, Directions.East, Directions.South, Directions.West];
     public ValueTask<object> Solve(string input, CancellationToken ct)
     {
         var (map, currentPosition, currentDirection) = ParseInput(input);
@@ -20,11 +20,11 @@ public partial class OneStarSolution : ISolution
             var nextPosition = currentPosition + currentDirection;
             if (map.IsObstructed(nextPosition))
             {
-                var currentIndex = Directions.IndexOf(currentDirection);
+                var currentIndex = WalkDirections.IndexOf(currentDirection);
                 var nextIndex = currentIndex + 1;
-                if (nextIndex >= Directions.Length)
+                if (nextIndex >= WalkDirections.Length)
                     nextIndex = 0;
-                currentDirection = Directions[nextIndex];
+                currentDirection = WalkDirections[nextIndex];
                 continue;
             }
 
@@ -36,7 +36,7 @@ public partial class OneStarSolution : ISolution
         return ValueTask.FromResult<object>(count);
     }
 
-    private (Map map, Point2D startPosition, Point2D startDirection) ParseInput(ReadOnlySpan<char> input)
+    internal static (Map map, Point2D startPosition, Point2D startDirection) ParseInput(ReadOnlySpan<char> input)
     {
         var width = input.IndexOf(Environment.NewLine) + Environment.NewLine.Length;
         var height = input.Length / width;
@@ -44,7 +44,7 @@ public partial class OneStarSolution : ISolution
         var startX = startIndex % width;
         var startY = startIndex / width;
         var startPosition = (startX, startY);
-        var startDirection = (0, -1);
+        var startDirection = Directions.North;
 
         var regex = ObstructionRegex();
         List<Point2D> obstructions = [];
@@ -56,13 +56,13 @@ public partial class OneStarSolution : ISolution
         }
 
         var mapWidth = width - Environment.NewLine.Length;
-        return (new Map(mapWidth, height, obstructions), startPosition, startDirection);
+        return (new Map(mapWidth, height, obstructions.ToImmutableArray()), startPosition, startDirection);
     }
 
     [GeneratedRegex("#")]
     private static partial Regex ObstructionRegex();
 
-    private readonly record struct Map(int Width, int Height, IReadOnlyCollection<Point2D> Obstructions)
+    internal readonly record struct Map(int Width, int Height, ImmutableArray<Point2D> Obstructions)
     {
         public readonly bool IsOutOfBounds(Point2D point)
             => point.X < 0 || point.Y < 0 || point.X > Width || point.Y > Height;
